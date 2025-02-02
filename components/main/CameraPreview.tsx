@@ -21,7 +21,7 @@ const CameraPreview: FC<CameraPreview> = ({
         <Button
           onClick={() => {
             setIsOpen(true);
-            startCamera;
+            startCamera();
           }}
         >
           Use Camera
@@ -34,7 +34,7 @@ const CameraPreview: FC<CameraPreview> = ({
             <Image
               className="fixed bottom-[20px] left-1/2 -translate-x-1/2"
               onClick={() => {
-                captureImage;
+                captureImage();
                 setIsOpen(false);
               }}
               src="/icon/capture-icon.png"
