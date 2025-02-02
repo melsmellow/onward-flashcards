@@ -1,17 +1,7 @@
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import Image from "next/image";
-import { FC, RefObject } from "react";
+import { FC, RefObject, useState } from "react";
 interface CameraPreview {
   captureImage: () => void;
   videoRef: RefObject<HTMLVideoElement | null>;
@@ -23,18 +13,30 @@ const CameraPreview: FC<CameraPreview> = ({
   videoRef,
   startCamera,
 }) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button onClick={startCamera}>Take Picture with Camera</Button>
+        <Button
+          onClick={() => {
+            setIsOpen(true);
+            startCamera;
+          }}
+        >
+          Use Camera
+        </Button>
       </DialogTrigger>
       <DialogContent className="rounded-md w-[90vw] h-[90vh]">
         <div className="relative">
           <video ref={videoRef} className="w-full h-full " autoPlay />
           <div className="rounded">
             <Image
-           className="fixed bottom-[20px] left-1/2 -translate-x-1/2"
-              // onClick={captureImage}
+              className="fixed bottom-[20px] left-1/2 -translate-x-1/2"
+              onClick={() => {
+                captureImage;
+                setIsOpen(false);
+              }}
               src="/icon/capture-icon.png"
               width={50}
               height={50}
@@ -42,7 +44,6 @@ const CameraPreview: FC<CameraPreview> = ({
             />
           </div>
         </div>
-
         {/* <Button onClick={captureImage} className="rounded"></Button> */}
       </DialogContent>
     </Dialog>

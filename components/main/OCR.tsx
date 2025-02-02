@@ -81,7 +81,7 @@ const OCR: React.FC<Props> = () => {
   };
 
   return (
-    <div className="p-16 ">
+    <div className="">
       <div className="mb-4">
         <Label htmlFor="picture">Upload Image:</Label>
         <Input
@@ -89,7 +89,6 @@ const OCR: React.FC<Props> = () => {
           type="file"
           accept="image/*"
           onChange={(e) => {
-            console.log(e);
             handleImageUpload(e);
           }}
           //   onChange={handleImageUpload}
