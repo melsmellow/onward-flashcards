@@ -8,7 +8,7 @@ const Header: FC<HeaderProps> = ({}) => {
   return (
     <div className="shadow-bottom dark:shadow-bottom-dark p-2 flex justify-between items-center">
       <div>Logo</div>
-      <div>
+      <div className="hidden lg:block">
         <HeaderLeftItem />
       </div>
       <ModeToggle />
