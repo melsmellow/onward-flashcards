@@ -1,28 +1,42 @@
+import FlashcardsGenerator from "@/components/main/FlashcardsGenerator";
 import OCR from "@/components/main/OCR";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card";
 
 export default function Home() {
   return (
-    <Card className="w-full mx-auto lg:w-[50vw] ">
-      <CardHeader>
-        <CardTitle>OCR</CardTitle>
-        <CardDescription>Sample OCR using Tesseract</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <OCR />
-      </CardContent>
-      {/* <CardFooter className="flex justify-between">
+    <div className="flex gap-2 flex-col">
+      <Card className="w-full mx-auto lg:w-[50vw] ">
+        <CardHeader>
+          <CardTitle>OCR</CardTitle>
+          <CardDescription>Sample OCR using Tesseract</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <OCR />
+        </CardContent>
+        {/* <CardFooter className="flex justify-between">
         <Button variant="outline">Cancel</Button>
         <Button>Deploy</Button>
       </CardFooter> */}
-    </Card>
+      </Card>
+      <Card className="w-full mx-auto lg:w-[50vw] ">
+        <CardHeader>
+          <CardTitle>Flash Card generator</CardTitle>
+          <CardDescription>Sample of flashcards generator</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FlashcardsGenerator />
+        </CardContent>
+        {/* <CardFooter className="flex justify-between">
+        <Button variant="outline">Cancel</Button>
+        <Button>Deploy</Button>
+      </CardFooter> */}
+      </Card>
+    </div>
   );
 }

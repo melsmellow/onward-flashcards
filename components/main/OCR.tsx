@@ -50,7 +50,6 @@ const OCR: React.FC<Props> = () => {
         const dataUrl = canvas.toDataURL("image/png");
         setImageSrc(dataUrl); // Set preview from camera capture
 
-
         // Stop the camera stream
         const stream = videoRef.current.srcObject as MediaStream;
         stream.getTracks().forEach((track) => track.stop());
