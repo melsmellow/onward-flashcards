@@ -10,6 +10,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      perspective: {
+        "500": "500px",
+      },
+      transformOrigin: {
+        center: "center",
+      },
       screens: {
         xs: { min: "0px", max: "265px" },
         // sm: { min: "266px", max: "411px" },
