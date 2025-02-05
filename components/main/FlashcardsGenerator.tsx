@@ -77,11 +77,11 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
       >
         Generate flash cards
       </Button>
-      {flashcardResult.length > 0 || flashCardData.length >0 && (
-        <Button onClick={() => router.push("/flashcards")}>
-          View flashcards
-        </Button>
-      )}
+      {flashcardResult.length > 0  && (
+          <Button onClick={() => router.push("/flashcards")}>
+            View flashcards
+          </Button>
+        )}
     </div>
   );
 };
