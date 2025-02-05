@@ -17,13 +17,13 @@ interface CardProps {
 const Card: FC<CardProps> = ({ data, number, setCard, cards }) => {
   console.log(data);
   const x = useMotionValue(0);
-  const opacity = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);
-  const rotate = useTransform(x, [-150, 150], [-18, 18]);
+  const opacity = useTransform(x, [-190, 0, 190], [0.6, 1, 0.6]);
+  const rotate = useTransform(x, [-190, 190], [-18, 18]);
   const { answer, question } = data;
   const [flipped, setFlipped] = useState(false);
 
   const handleDragend = () => {
-    if (Math.abs(x.get()) > 80) {
+    if (Math.abs(x.get()) > 30) {
       console.log("im here");
       const newArr = [...cards];
       const firstElement = newArr.shift();
@@ -57,9 +57,9 @@ const Card: FC<CardProps> = ({ data, number, setCard, cards }) => {
           backfaceVisibility: "hidden",
         }}
       >
-        <p className="text-lg font-bold block text-center fixed right-5 top-5">
+        {/* <p className="text-lg font-bold block text-center fixed right-5 top-5">
           {number}
-        </p>
+        </p> */}
         <p className="text-lg font-bold block">Answer:</p>
         <p className="text-md">{answer}</p>
       </div>
@@ -69,9 +69,9 @@ const Card: FC<CardProps> = ({ data, number, setCard, cards }) => {
         className="absolute w-full h-full bg-gray-700 text-white rounded-xl shadow-lg p-6"
         style={{ backfaceVisibility: "hidden" }}
       >
-        <p className="text-lg font-bold block text-center fixed right-5 top-5">
+        {/* <p className="text-lg font-bold block text-center fixed right-5 top-5">
           {number}
-        </p>
+        </p> */}
         <p className="text-lg font-bold block">Question:</p>
         <p className="text-md">{question}</p>
       </div>
