@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-import { Flashcard } from "./FlashcardsGenerator";
 import {
   Card,
   CardContent,
@@ -7,13 +6,14 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import { Flashcard } from "@/types/global";
 
 interface FlashCardProps {
   data: Flashcard;
   index: number;
 }
 
-const FlashCard: FC<FlashCardProps> = ({ data , index}) => {
+const FlashCard: FC<FlashCardProps> = ({ data, index }) => {
   const { question, answer } = data;
   return (
     <Card className="w-full">

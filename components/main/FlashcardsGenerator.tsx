@@ -1,33 +1,26 @@
 "use client";
 import { generateFlashcards } from "@/app/actions";
-import React, { FC, useState } from "react";
+import { useFlashcardStore } from "@/store/flashcardStore";
+import { Flashcard } from "@/types/global";
+import { useRouter } from "next/navigation";
+import { FC, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import FlashCard from "./FlashCard";
-import { motion } from "framer-motion";
-
-export type Flashcard = {
-  question: string;
-  answer: string;
-};
 
 interface FlashcardsGeneratorProps {}
 
 const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
+  const router = useRouter();
   const [topic, setTopic] = useState("");
   const [numQuestions, setNumQuestions] = useState(5);
   const [flashcardResult, setFlashcards] = useState<Flashcard[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [flipped, setFlipped] = useState(false);
 
-  console.log(flipped);
+  const { setFlashcardData, flashCardData } = useFlashcardStore();
 
   const handleGenerate = async () => {
-    setLoading(true);
     const result = await generateFlashcards(topic, numQuestions);
     if (result.length > 0) {
       transformFlashcards(result);
-      setLoading(false);
       return;
     }
     alert("Failed to generate, please try again");
@@ -36,7 +29,7 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
   };
 
   const transformFlashcards = (data: string[]): void => {
-    const flashcards: Flashcard[] = [];
+    const flashcards: Omit<Flashcard, "number">[] = [];
 
     for (let i = 0; i < data.length; i++) {
       const q = "Question:";
@@ -53,7 +46,15 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
         flashcards.push({ question, answer });
       }
     }
-    setFlashcards(flashcards);
+
+    // Add number property to each flashcard
+    const newArr = flashcards.map((data, idx) => ({
+      ...data,
+      number: idx + 1,
+    }));
+    // Now you can set the state with the updated flashcards
+    setFlashcards(newArr);
+    setFlashcardData(newArr);
   };
 
   return (
@@ -76,44 +77,10 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
       >
         Generate flash cards
       </Button>
-      <div>This is just a sample flipping card, Kindly click to flip the card below</div>
-      <div
-        className="group w-64 h-40 perspective cursor-pointer p-6"
-        onClick={() => setFlipped(!flipped)}
-      >
-        <motion.div
-          className="relative w-full h-full transition-transform duration-500"
-          animate={{ rotateY: flipped ? 180 : 0 }}
-          style={{ transformStyle: "preserve-3d" }}
-        >
-          {/* Front Side */}
-          <div
-            className="absolute w-full h-full bg-blue-500 text-white rounded-xl shadow-lg p-6"
-            style={{ backfaceVisibility: "hidden" }}
-          >
-            <p className="text-md font-bold block">Question:</p>
-            <p className="text-sm">What is React?</p>
-          </div>
-
-          {/* Back Side */}
-          <div
-            className="absolute w-full h-full bg-gray-800 text-white rounded-xl shadow-lg p-6"
-            style={{
-              transform: "rotateY(180deg)",
-              backfaceVisibility: "hidden",
-            }}
-          >
-            <p className="text-md font-bold block">Answer:</p>
-            <p className="text-sm"> A JavaScript library for building UIs.</p>
-          </div>
-        </motion.div>
-      </div>
-      {flashcardResult.length > 0 && !loading && (
-        <div className="flex flex-col gap-2">
-          {flashcardResult.map((data, index) => {
-            return <FlashCard data={data} index={index} key={data.question} />;
-          })}
-        </div>
+      {flashcardResult.length > 0 || flashCardData.length >0 && (
+        <Button onClick={() => router.push("/flashcards")}>
+          View flashcards
+        </Button>
       )}
     </div>
   );

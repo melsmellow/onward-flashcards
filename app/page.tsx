@@ -5,13 +5,14 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 
 export default function Home() {
+
   return (
     <div className="flex gap-2 flex-col">
-      <Card className="w-full mx-auto lg:w-[50vw] ">
+      <Card className="w-full mx-auto lg:w-[50vw]">
         <CardHeader>
           <CardTitle>OCR</CardTitle>
           <CardDescription>Sample OCR using Tesseract</CardDescription>
@@ -19,10 +20,6 @@ export default function Home() {
         <CardContent>
           <OCR />
         </CardContent>
-        {/* <CardFooter className="flex justify-between">
-        <Button variant="outline">Cancel</Button>
-        <Button>Deploy</Button>
-      </CardFooter> */}
       </Card>
       <Card className="w-full mx-auto lg:w-[50vw] ">
         <CardHeader>
@@ -32,10 +29,6 @@ export default function Home() {
         <CardContent>
           <FlashcardsGenerator />
         </CardContent>
-        {/* <CardFooter className="flex justify-between">
-        <Button variant="outline">Cancel</Button>
-        <Button>Deploy</Button>
-      </CardFooter> */}
       </Card>
     </div>
   );
