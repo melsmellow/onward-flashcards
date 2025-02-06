@@ -15,8 +15,6 @@ const FlashCard: FC<FlashCardProps> = ({}) => {
 
   const [cards, setCard] = useState<Flashcard[]>(flashCardData);
 
-
-
   return (
     <>
       <Button

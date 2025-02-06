@@ -1,11 +1,16 @@
 "use client";
-import { generateFlashcards } from "@/app/actions";
+import {
+  generateFlashcards,
+  generateFlashcardsFromExtractedText,
+} from "@/app/actions";
 import { useFlashcardStore } from "@/store/flashcardStore";
 import { Flashcard } from "@/types/global";
 import { useRouter } from "next/navigation";
 import { FC, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { Label } from "@radix-ui/react-label";
+import { Textarea } from "../ui/textarea";
 
 interface FlashcardsGeneratorProps {}
 
@@ -18,7 +23,10 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
   const { setFlashcardData, flashCardData } = useFlashcardStore();
 
   const handleGenerate = async () => {
-    const result = await generateFlashcards(topic, numQuestions);
+    const result = await generateFlashcardsFromExtractedText(
+      topic,
+      numQuestions
+    );
     if (result.length > 0) {
       transformFlashcards(result);
       return;
@@ -30,26 +38,27 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
 
   const transformFlashcards = (data: string[]): void => {
     const flashcards: Omit<Flashcard, "number">[] = [];
+    const filteredData = data.filter((d) => d != "");
 
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < filteredData.length; i++) {
       const q = "Question:";
       const a = "Answer:";
-      if (data[i].includes(q)) {
-        const index = data[i].indexOf(q);
-        const question = data[i]
-          .slice(index + q.length, data[i].length)
+      if (filteredData[i].includes(q)) {
+        const index = filteredData[i].indexOf(q);
+        const question = filteredData[i]
+          .slice(index + q.length, filteredData[i].length)
           .replace(/\*/g, "");
-        const answerIdx = data[i + 1].indexOf(a);
-        const answer = data[i + 1]
-          .slice(answerIdx + a.length, data[i + 1].length)
+        const answerIdx = filteredData[i + 1].indexOf(a);
+        const answer = filteredData[i + 1]
+          .slice(answerIdx + a.length, filteredData[i + 1].length)
           .replace(/\*/g, "");
         flashcards.push({ question, answer });
       }
     }
 
     // Add number property to each flashcard
-    const newArr = flashcards.map((data, idx) => ({
-      ...data,
+    const newArr = flashcards.map((filteredData, idx) => ({
+      ...filteredData,
       number: idx + 1,
     }));
     // Now you can set the state with the updated flashcards
@@ -59,10 +68,19 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <Input
+      {/* <Input
         onChange={(e) => setTopic(e.target.value)}
         value={topic}
         placeholder="Topic"
+      /> */}
+      <Label htmlFor="message-2">
+        Sample text input for flashcards generation
+      </Label>
+      <Textarea
+        placeholder="Type your message here."
+        id="message-2"
+        onChange={(e) => setTopic(e.target.value)}
+        value={topic}
       />
       <Input
         type="number"
@@ -77,11 +95,11 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
       >
         Generate flash cards
       </Button>
-      {flashcardResult.length > 0  && (
-          <Button onClick={() => router.push("/flashcards")}>
-            View flashcards
-          </Button>
-        )}
+      {flashcardResult.length > 0 && (
+        <Button onClick={() => router.push("/flashcards")}>
+          View flashcards
+        </Button>
+      )}
     </div>
   );
 };
