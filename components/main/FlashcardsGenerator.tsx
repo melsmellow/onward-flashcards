@@ -11,6 +11,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "@radix-ui/react-label";
 import { Textarea } from "../ui/textarea";
+import { Loader2 } from "lucide-react";
 
 interface FlashcardsGeneratorProps {}
 
@@ -19,18 +20,21 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
   const [topic, setTopic] = useState("");
   const [numQuestions, setNumQuestions] = useState(5);
   const [flashcardResult, setFlashcards] = useState<Flashcard[]>([]);
-
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const { setFlashcardData, flashCardData } = useFlashcardStore();
 
   const handleGenerate = async () => {
+    setIsGenerating(true);
     const result = await generateFlashcardsFromExtractedText(
       topic,
       numQuestions
     );
     if (result.length > 0) {
       transformFlashcards(result);
+      setIsGenerating(false);
       return;
     }
+    setIsGenerating(false);
     alert("Failed to generate, please try again");
     // const flashcardsArray: Flashcard[] = transformFlashcards(result);
     // setFlashcards(flashcardsArray);
@@ -88,13 +92,21 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
         value={numQuestions}
         placeholder="Number of questions to generate"
       />
-      <Button
-        onClick={handleGenerate}
-        className="disabled:opacity-50"
-        disabled={topic === ""}
-      >
-        Generate flash cards
-      </Button>
+      {isGenerating ? (
+        <Button disabled>
+          <Loader2 className="animate-spin" />
+          Please wait
+        </Button>
+      ) : (
+        <Button
+          onClick={handleGenerate}
+          className="disabled:opacity-50"
+          disabled={topic === ""}
+        >
+          Generate flash cards
+        </Button>
+      )}
+
       {flashcardResult.length > 0 && (
         <Button onClick={() => router.push("/flashcards")}>
           View flashcards
