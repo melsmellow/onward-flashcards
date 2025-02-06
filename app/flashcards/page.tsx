@@ -13,7 +13,17 @@ const FlashCard: FC<FlashCardProps> = ({}) => {
   const router = useRouter();
   const { flashCardData } = useFlashcardStore();
 
-  const [cards, setCard] = useState<Flashcard[]>(flashCardData);
+  const [cards, setCard] = useState<Flashcard[]>([]);
+
+  useEffect(() => {
+    // Reorder the cards to ensure the first card is at the front of the array
+    if (flashCardData && flashCardData.length > 0) {
+      const newArr = structuredClone(flashCardData);
+      const firstElement = newArr.shift();
+      newArr.push(firstElement!);
+      setCard(newArr); // Ensure it's in the correct order on the initial load
+    }
+  }, [flashCardData]);
 
   return (
     <>
@@ -31,7 +41,7 @@ const FlashCard: FC<FlashCardProps> = ({}) => {
               return (
                 <Card
                   data={card}
-                  key={card.answer}
+                  key={card.uuid}
                   number={card.number}
                   setCard={setCard}
                   cards={cards}
@@ -44,5 +54,4 @@ const FlashCard: FC<FlashCardProps> = ({}) => {
     </>
   );
 };
-
 export default FlashCard;

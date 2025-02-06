@@ -12,6 +12,7 @@ import { Input } from "../ui/input";
 import { Label } from "@radix-ui/react-label";
 import { Textarea } from "../ui/textarea";
 import { Loader2 } from "lucide-react";
+import { v4 as uuidv4 } from 'uuid';
 
 interface FlashcardsGeneratorProps {}
 
@@ -41,7 +42,7 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
   };
 
   const transformFlashcards = (data: string[]): void => {
-    const flashcards: Omit<Flashcard, "number">[] = [];
+    const flashcards:Omit<Flashcard, "number" | "uuid">[] = [];
     const filteredData = data.filter((d) => d != "");
 
     for (let i = 0; i < filteredData.length; i++) {
@@ -64,6 +65,7 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
     const newArr = flashcards.map((filteredData, idx) => ({
       ...filteredData,
       number: idx + 1,
+      uuid:uuidv4()
     }));
     // Now you can set the state with the updated flashcards
     setFlashcards(newArr);

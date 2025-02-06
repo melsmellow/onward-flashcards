@@ -1,7 +1,7 @@
 "ise client";
 import { Flashcard } from "@/types/global";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { Dispatch, FC, SetStateAction, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 interface CardProps {
   data: Flashcard;
   number: number;
@@ -27,11 +27,24 @@ const Card: FC<CardProps> = ({ data, number, setCard, cards }) => {
   const [flipped, setFlipped] = useState(false);
 
   const handleDragend = () => {
-    if (Math.abs(x.get()) > 30) {
-      const newArr = [...cards];
-      const firstElement = newArr.shift();
-      newArr.push(firstElement!);
-      setCard(newArr);
+    const offset = x.get();
+
+    if (offset < -30) {
+      // Swiped left: Move the first card to the end
+      setCard((prevCards) => {
+        const newArr = [...prevCards];
+        const firstElement = newArr.shift();
+        newArr.push(firstElement!);
+        return newArr;
+      });
+    } else if (offset > 30) {
+      // Swiped right: Move the last card to the front
+      setCard((prevCards) => {
+        const newArr = [...prevCards];
+        const lastElement = newArr.pop();
+        newArr.unshift(lastElement!);
+        return newArr;
+      });
     }
   };
 
