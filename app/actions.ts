@@ -43,20 +43,23 @@ export async function generateFlashcardsFromExtractedText(
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
     const prompt = `
-    You are a helpful assistant that generates flashcards from text. 
+    You are a highly intelligent AI designed to process text extracted from OCR. The text may be disorganized or fragmented due to how it was captured. Your task is to:
 
-    Given the following extracted text, create ${numQuestions} well-structured flashcards. Each flashcard should have:
-    - A clear question based on important concepts or details from the text.
-    - A concise and informative answer.
+    1. **Reconstruct and Organize** the extracted text into a coherent and logical format. If sentences seem out of order, intelligently infer their correct arrangement while preserving meaning.
+    2. **Summarize Key Concepts** to extract the most important ideas, definitions, and details.
+    3. **Generate ${numQuestions} Well-Structured Flashcards** based on the organized text. Each flashcard should include:
+      - A **clear question** focusing on key concepts, definitions, or important details.
+      - A **concise and informative answer** that directly addresses the question.
 
-    Make sure the questions cover key ideas, definitions, and important takeaways.
+    Make sure that the flashcards cover a diverse range of topics found in the text.
 
-    Extracted Text:
+    ### Extracted OCR Text:
     """
     ${extractedText}
     """
 
-    Now, generate ${numQuestions} flashcards.
+    Now, process the text as described and generate ${numQuestions} high-quality flashcards.
+
     `;
 
     const result = await model.generateContent(prompt);

@@ -38,6 +38,7 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({
       topic.replace(/\n/g, " "),
       Number(numQuestions)
     );
+    console.log(result);
     if (Array.isArray(result) && result.length > 0) {
       transformFlashcards(result);
       setIsGenerating(false);
