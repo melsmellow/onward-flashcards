@@ -1,7 +1,7 @@
 "use client";
 import {
   generateFlashcardsFromText,
-  reconstructExtractedText
+  reconstructExtractedText,
 } from "@/app/actions";
 import { useFlashcardStore } from "@/store/flashcardStore";
 import { Flashcard } from "@/types/global";
@@ -27,20 +27,23 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({
   }, [extractedText]);
 
   const [numQuestions, setNumQuestions] = useState<string>("5");
+  const [loadingText, setLoadingText] = useState<string>("Please wait");
   const [flashcardResult, setFlashcards] = useState<Flashcard[]>([]);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const { setFlashcardData, flashCardData } = useFlashcardStore();
 
   const handleGenerate = async () => {
     setIsGenerating(true);
+    setLoadingText("Please Wait");
 
     try {
       // Step 1: Structure the extracted text
+      setLoadingText("0 out of 2: Summarizing your inputs");
       const structuredText = await reconstructExtractedText(extractedText);
-
+      setLoadingText("1 out of 2: Generating Flashcards");
       // Step 2: Generate flashcards from structured text
       const flashcards = await generateFlashcardsFromText(
-        structuredText,
+        structuredText.replace(/\n/g, " "),
         Number(numQuestions)
       );
 
@@ -134,7 +137,7 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({
       {isGenerating ? (
         <Button disabled>
           <Loader2 className="animate-spin" />
-          Please wait
+          {loadingText}
         </Button>
       ) : (
         <Button
