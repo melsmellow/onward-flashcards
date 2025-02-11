@@ -35,7 +35,7 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({
   const handleGenerate = async () => {
     setIsGenerating(true);
     const result = await generateFlashcardsFromExtractedText(
-      topic,
+      topic.replace(/\n/g, " "),
       Number(numQuestions)
     );
     if (result.length > 0) {
