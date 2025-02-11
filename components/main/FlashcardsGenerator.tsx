@@ -6,20 +6,28 @@ import {
 import { useFlashcardStore } from "@/store/flashcardStore";
 import { Flashcard } from "@/types/global";
 import { useRouter } from "next/navigation";
-import { FC, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "@radix-ui/react-label";
 import { Textarea } from "../ui/textarea";
 import { Loader2 } from "lucide-react";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
-interface FlashcardsGeneratorProps {}
+interface FlashcardsGeneratorProps {
+  extractedText: string;
+}
 
-const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
+const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({
+  extractedText,
+}) => {
   const router = useRouter();
   const [topic, setTopic] = useState("");
-  const [numQuestions, setNumQuestions] = useState(5);
+  useEffect(() => {
+    setTopic(extractedText);
+  }, [extractedText]);
+
+  const [numQuestions, setNumQuestions] = useState<string>("5");
   const [flashcardResult, setFlashcards] = useState<Flashcard[]>([]);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const { setFlashcardData, flashCardData } = useFlashcardStore();
@@ -28,7 +36,7 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
     setIsGenerating(true);
     const result = await generateFlashcardsFromExtractedText(
       topic,
-      numQuestions
+      Number(numQuestions)
     );
     if (result.length > 0) {
       transformFlashcards(result);
@@ -42,7 +50,7 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
   };
 
   const transformFlashcards = (data: string[]): void => {
-    const flashcards:Omit<Flashcard, "number" | "uuid">[] = [];
+    const flashcards: Omit<Flashcard, "number" | "uuid">[] = [];
     const filteredData = data.filter((d) => d != "");
 
     for (let i = 0; i < filteredData.length; i++) {
@@ -65,32 +73,53 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({}) => {
     const newArr = flashcards.map((filteredData, idx) => ({
       ...filteredData,
       number: idx + 1,
-      uuid:uuidv4()
+      uuid: uuidv4(),
     }));
     // Now you can set the state with the updated flashcards
     setFlashcards(newArr);
     setFlashcardData(newArr);
   };
 
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: Dispatch<SetStateAction<string>>
+  ) => {
+    const value = e.target.value;
+
+    // Remove non-numeric characters except the decimal point
+    const sanitizedValue = value.replace(/[^0-9.]/g, "");
+
+    // Remove leading zeros except when followed by a decimal
+    const formattedValue = sanitizedValue.replace(/^0+(?=\d)/, "");
+
+    // Convert to number and ensure it's ≤ 20
+    const numericValue = parseFloat(formattedValue);
+
+    if (!isNaN(numericValue) && numericValue > 20) {
+      setter("20"); // Cap at 20
+    } else {
+      setter(formattedValue);
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3">
       {/* <Input
         onChange={(e) => setTopic(e.target.value)}
         value={topic}
         placeholder="Topic"
       /> */}
-      <Label htmlFor="message-2">
-        Sample text input for flashcards generation
-      </Label>
       <Textarea
+        className="h-[50vh]"
         placeholder="Type your message here."
         id="message-2"
         onChange={(e) => setTopic(e.target.value)}
         value={topic}
       />
       <Input
-        type="number"
-        onChange={(e) => setNumQuestions(Number(e.target.value))}
+        onChange={(e) => handleInputChange(e, setNumQuestions)}
+        inputMode="decimal"
+        type="text"
         value={numQuestions}
         placeholder="Number of questions to generate"
       />
