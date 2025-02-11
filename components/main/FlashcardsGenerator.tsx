@@ -1,18 +1,17 @@
 "use client";
 import {
-  generateFlashcards,
-  generateFlashcardsFromExtractedText,
+  generateFlashcardsFromText,
+  reconstructExtractedText
 } from "@/app/actions";
 import { useFlashcardStore } from "@/store/flashcardStore";
 import { Flashcard } from "@/types/global";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Label } from "@radix-ui/react-label";
 import { Textarea } from "../ui/textarea";
-import { Loader2 } from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
 
 interface FlashcardsGeneratorProps {
   extractedText: string;
@@ -36,22 +35,26 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({
     setIsGenerating(true);
 
     try {
-      const result = await generateFlashcardsFromExtractedText(
-        topic.replace(/\n/g, " "),
+      // Step 1: Structure the extracted text
+      const structuredText = await reconstructExtractedText(extractedText);
+
+      // Step 2: Generate flashcards from structured text
+      const flashcards = await generateFlashcardsFromText(
+        structuredText,
         Number(numQuestions)
       );
-      console.log(result);
-      if (Array.isArray(result) && result.length > 0) {
-        transformFlashcards(result);
+
+      console.log(flashcards);
+      if (Array.isArray(flashcards) && flashcards.length > 0) {
+        transformFlashcards(flashcards);
         setIsGenerating(false);
         return;
       }
     } catch (error) {
       alert("Failed to generate, please try again");
     }
-    
+
     setIsGenerating(false);
- 
   };
 
   const transformFlashcards = (data: string[]): void => {

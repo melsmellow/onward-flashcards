@@ -27,45 +27,73 @@ export async function generateFlashcards(topic: string, numQuestions: number) {
   }
 }
 
-export async function generateFlashcardsFromExtractedText(
-  extractedText: string,
-  numQuestions: number
-) {
+export async function reconstructExtractedText(extractedText: string) {
   try {
     if (!API_KEY) {
       throw new Error("API key is missing");
     }
-    if (!extractedText || !numQuestions) {
-      throw new Error("extractedText and number of questions are required");
+    if (!extractedText) {
+      throw new Error("Extracted text is required");
     }
 
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
     const prompt = `
-    You are a highly intelligent AI designed to process text extracted from OCR. The text may be disorganized or fragmented due to how it was captured. Your task is to:
+    You are an advanced text reconstruction AI. The following text was extracted from images using OCR, but it may be jumbled or out of order. 
 
-    1. **Reconstruct and Organize** the extracted text into a coherent and logical format. If sentences seem out of order, intelligently infer their correct arrangement while preserving meaning.
-    2. **Summarize Key Concepts** to extract the most important ideas, definitions, and details.
-    3. **Generate ${numQuestions} Well-Structured Flashcards** based on the organized text. Each flashcard should include:
-      - A **clear question** focusing on key concepts, definitions, or important details.
-      - A **concise and informative answer** that directly addresses the question.
+    Your task is to:
+    1. **Reconstruct and arrange the text logically**, ensuring that fragmented or disordered sentences are properly structured.
+    2. **Remove unnecessary artifacts** like OCR errors or broken words.
+    3. **Preserve the original meaning** while improving readability.
 
-    Make sure that the flashcards cover a diverse range of topics found in the text.
-
-    ### Extracted OCR Text:
+    Here is the extracted OCR text:
     """
     ${extractedText}
     """
 
-    Now, process the text as described and generate ${numQuestions} high-quality flashcards.
-
+    Now, provide the **structured and logically ordered version** of this text.
     `;
 
     const result = await model.generateContent(prompt);
-    const response = result.response.text();
+    return result.response.text(); // Return the structured text
+  } catch (error) {
+    console.error("Error reconstructing text:", error);
+    return extractedText; // Fallback to original text if AI call fails
+  }
+}
 
-    return response.split("\n"); // Return as an array of flashcards
+export async function generateFlashcardsFromText(structuredText: string, numQuestions: number) {
+  try {
+    if (!API_KEY) {
+      throw new Error("API key is missing");
+    }
+    if (!structuredText || !numQuestions) {
+      throw new Error("Structured text and number of questions are required");
+    }
+
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    const prompt = `
+    You are an expert flashcard creator. Given the structured text below, generate ${numQuestions} high-quality flashcards.
+
+    Each flashcard should have:
+    - A **clear question** that tests understanding of key concepts.
+    - A **concise and informative answer**.
+
+    Make sure the flashcards cover important definitions, key takeaways, and main ideas.
+
+    ### Structured Text:
+    """
+    ${structuredText}
+    """
+
+    Now, generate ${numQuestions} well-structured flashcards.
+    `;
+
+    const result = await model.generateContent(prompt);
+    return result.response.text().split("\n"); // Return flashcards as an array
   } catch (error) {
     console.error("Error generating flashcards:", error);
     return ["Error generating flashcards. Please try again."];
