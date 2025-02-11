@@ -34,20 +34,24 @@ const FlashcardsGenerator: FC<FlashcardsGeneratorProps> = ({
 
   const handleGenerate = async () => {
     setIsGenerating(true);
-    const result = await generateFlashcardsFromExtractedText(
-      topic.replace(/\n/g, " "),
-      Number(numQuestions)
-    );
-    console.log(result);
-    if (Array.isArray(result) && result.length > 0) {
-      transformFlashcards(result);
-      setIsGenerating(false);
-      return;
+
+    try {
+      const result = await generateFlashcardsFromExtractedText(
+        topic.replace(/\n/g, " "),
+        Number(numQuestions)
+      );
+      console.log(result);
+      if (Array.isArray(result) && result.length > 0) {
+        transformFlashcards(result);
+        setIsGenerating(false);
+        return;
+      }
+    } catch (error) {
+      alert("Failed to generate, please try again");
     }
+    
     setIsGenerating(false);
-    alert("Failed to generate, please try again");
-    // const flashcardsArray: Flashcard[] = transformFlashcards(result);
-    // setFlashcards(flashcardsArray);
+ 
   };
 
   const transformFlashcards = (data: string[]): void => {
